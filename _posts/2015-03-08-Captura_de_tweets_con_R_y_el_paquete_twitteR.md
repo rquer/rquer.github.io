@@ -45,7 +45,7 @@ map + geom_point(data = resDF, aes(x=longitude ,y=latitude),cex=1.2,alpha=0.4,co
 guides(alpha=FALSE)
 ```
 
-![Map](https://raw.githubusercontent.com/GuillemSalazar/guillemsalazar.github.io/master/files/Map.png)
+![Map](/files/Map.png)
 
 Podemos añadir la densidad de tweets para tener una idea de donde se concentra la mayor proporción de los tweets:
 
@@ -57,7 +57,7 @@ geom_point(data = resDF, aes(x=longitude ,y=latitude),col=rgb(1,0,0,0.4),cex=1) 
 theme(legend.position = "none", axis.title = element_blank(), text = element_text(size = 12))
 ```
 
-![Map_density](https://raw.githubusercontent.com/GuillemSalazar/guillemsalazar.github.io/master/files/Map_density.png)
+![Map_density](/files/Map_density.png)
 
 Finalmente, podemos visualizar también la evolución del número de tweets a lo largo de la semana. El título del gráfico toma la información del texto buscado y definido anteriormente y del número de tweets capturados:
 
@@ -69,4 +69,4 @@ ggtitle(paste("Search:",paste(string,collapse=" & "),"||",dim(resDF)[1],"geoloca
 theme(plot.title = element_text(lineheight=.4, face="bold",size=10))
 ```
 
-![Dynamics](https://raw.githubusercontent.com/GuillemSalazar/guillemsalazar.github.io/master/files/Dynamics.png)
+![Dynamics](/files/Dynamics.png)
