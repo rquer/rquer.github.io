@@ -1,0 +1,57 @@
+---
+layout: posts
+title: "Available genomes through time"
+author: "Guillem Salazar"
+published: false
+status: process
+draft: false
+---
+Load data
+
+```{R}
+genomes<-read.table("ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/prokaryotes.txt",sep="\t",comment.char="",header=T,quote="")
+genomes$Release.Date<-as.POSIXct(as.character(genomes$Release.Date),format="%Y/%m/%d")
+genomes<-genomes[order(genomes$Release.Date),]
+genomes<-genomes[-c(which(duplicated(genomes$TaxID))),]
+```
+
+Construct a table with the accumulated number of genomes through time for each Phyla
+```{R}
+library(reshape2)
+phyla.table<-table(genomes$Release.Date,genomes$Group)
+phyla.table<-apply(phyla.table,2,cumsum)
+phyla.df<-melt(data.frame(date=as.Date(rownames(phyla.table)), phyla.table), id.vars="date")
+```
+
+Set the time intervals for the animation
+
+```{R}
+steps<-20
+breaks<-seq(min(phyla.df$date),max(phyla.df$date),length.out=steps)
+breaks<-c(breaks,rep(max(phyla.df$date),10))
+```
+
+Try first a static plot
+
+```{R}
+par(mar=c(5,5,5,10))
+plot(phyla.df$date,phyla.df$variable,cex=log10(phyla.df$value+1)/2,pch=19,col=rgb(0,0,1,1),yaxt="n",ylab="",xlab="Date",bty="n")
+axis(4,at=1:nlevels(phyla.df$variable),labels=levels(phyla.df$variable),las=2,cex.axis=0.7)
+legend("top",paste(c(1,10,100,1000,10000),"genomes"),cex=0.6,pt.cex=log10(c(1,10,100,1000,10000)+1)/2,horiz=T,xpd=NA,pch=19,col="blue",inset=-0.1)
+```
+
+Try a GIF
+
+```{R}
+library(animation)
+ani.options(interval=0.1)
+saveGIF({
+  par(mar=c(5,5,5,10))
+  for (i in breaks){
+    plot(phyla.df$date,phyla.df$variable,cex=log10(phyla.df$value+1)/3,pch=19,col=rgb(0,0,1,1),yaxt="n",ylab="",xlab="Date",bty="n",type="n")
+    points(phyla.df$date[phyla.df$date<=i],phyla.df$variable[phyla.df$date<=i],cex=log10(phyla.df$value[phyla.df$date<=i]+1)/2,pch=19,col=rgb(0,0,1,1))
+    axis(4,at=1:nlevels(phyla.df$variable),labels=levels(phyla.df$variable),las=2,cex.axis=0.7)
+    legend("top",paste(c(1,10,100,1000,10000),"genomes"),cex=0.6,pt.cex=log10(c(1,10,100,1000,10000)+1)/2,horiz=T,xpd=NA,pch=19,col="blue",inset=-0.1)}
+},ani.height=640,ani.width=780,movie.name="Genomes.gif",ani.interval=0.1)
+
+```
