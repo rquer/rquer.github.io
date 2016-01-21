@@ -1,7 +1,8 @@
 name: Guillem Salazar
-markdown: markdown
-markdown:
-  input: GFM
+markdown: redcarpet
+#markdown: markdown
+#markdown:
+#  input: GFM
 pygments: true
 #permalink: /:title
 #paginate: 10
