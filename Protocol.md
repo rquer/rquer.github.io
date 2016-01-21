@@ -36,7 +36,7 @@ rmd2md()
 ```
 cd /Users/guillemsalazar/Documents/RqueRblog
 git add -A
-git commit -a -m "First commit"
+git commit -a -m "Your message"
 git remote add origin git@rquer.github.com:rquer/rquer.github.io.git
 git push origin master
 ```
