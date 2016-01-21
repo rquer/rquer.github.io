@@ -1,4 +1,7 @@
-#Recursos de datos abiertos
+---
+layout: page
+title: Recursos de datos abiertos
+---
 
 ###Ciencia
 
@@ -7,3 +10,5 @@
 ###Ciudades
 
 1. [**OpenDataBCN**](http://opendata.bcn.cat/): Portal de datos abiertos del Ayuntamiento de Barcelona.
+
+
