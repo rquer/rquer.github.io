@@ -4,7 +4,7 @@
 2. Name it as **Year-Month-Day-This_is_the_title.Rmd**
 3. Use the proper header (see below).
 4. Run the **rmd2md.R** script: An *.md* file is created within *_posts* folder and images are converted to *.png* files and saved within *figures* folder.
-5. If this is the final version change the change the published parameter to *true* and change the status parameter to *publish* (so it won't be processed anymore).
+5. If this is the final version change the published parameter to *true* and change the status parameter to *publish* (so it won't be processed anymore).
 6. Add and commit changes.
 
 Header:
@@ -35,6 +35,7 @@ rmd2md()
 
 ```
 cd /Users/guillemsalazar/Documents/RqueRblog
+git config user.email "rquerblog@gmail.com"
 git add -A
 git commit -a -m "Your message"
 git remote add origin git@rquer.github.com:rquer/rquer.github.io.git

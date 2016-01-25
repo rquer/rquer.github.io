@@ -2,8 +2,8 @@
 layout: posts
 title: "Available genomes through time"
 author: "Guillem Salazar"
-published: false
-status: process
+published: true
+status: publish
 draft: false
 ---
 Load data
