@@ -81,7 +81,7 @@ m
 ```
 
 <div class="container">
-    <iframe src="/figures/Leaflet_map1.html" height="315" width="560" allowfullscreen="" frameborder="0">
+    <iframe src="/figures/Leaflet_map2.html" height="315" width="560" allowfullscreen="" frameborder="0">
     </iframe>
 </div>
 
@@ -103,7 +103,7 @@ m
 ```
 
 <div class="container">
-    <iframe src="/figures/Leaflet_map1.html" height="315" width="560" allowfullscreen="" frameborder="0">
+    <iframe src="/figures/Leaflet_map3.html" height="315" width="560" allowfullscreen="" frameborder="0">
     </iframe>
 </div>
 
