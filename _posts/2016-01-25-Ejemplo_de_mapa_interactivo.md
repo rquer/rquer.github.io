@@ -59,7 +59,7 @@ m
 ```
 
 <div class="container">
-    <iframe src="/figures/Leaflet_map1.html" height="315" width="560" allowfullscreen="" frameborder="0">
+    <iframe src="/figures/Leaflet_map1.html" height="615" width="1000" allowfullscreen="" frameborder="0">
     </iframe>
 </div>
 
@@ -71,7 +71,7 @@ Una infinidad de opciones pueden ser especificadas para modificar el mapa o la v
 2. Cambiar el color de los puntos.
 3. Añadir cuadros de información a los puntos que se muestran al pulsarlos con el ratón.
 
-El argumento *radius* determina el tamaño de los círculos. El argumento *stroke* puede fijarse como *FALSE* para eliminar el contorno de los puntos. Y el argumento *color* y *fillOpacity* determinan el color y opacidad de estos mismos. Así, si queremos los seísmos representados como puntos rojos semitransparentes y de radio proporcional a su magnitus:
+El argumento *radius* determina el tamaño de los círculos. El argumento *stroke* puede fijarse como *FALSE* para eliminar el contorno de los puntos. Y el argumento *color* y *fillOpacity* determinan el color y opacidad de estos mismos. Así, si queremos los seísmos representados como puntos rojos semitransparentes y de radio proporcional a su magnitud:
 
 ```r
 m<-leaflet() %>%
@@ -81,7 +81,7 @@ m
 ```
 
 <div class="container">
-    <iframe src="/figures/Leaflet_map2.html" height="315" width="560" allowfullscreen="" frameborder="0">
+    <iframe src="/figures/Leaflet_map2.html" height="615" width="1000" allowfullscreen="" frameborder="0">
     </iframe>
 </div>
 
@@ -103,7 +103,7 @@ m
 ```
 
 <div class="container">
-    <iframe src="/figures/Leaflet_map3.html" height="315" width="560" allowfullscreen="" frameborder="0">
+    <iframe src="/figures/Leaflet_map3.html" height="615" width="1000" allowfullscreen="" frameborder="0">
     </iframe>
 </div>
 
