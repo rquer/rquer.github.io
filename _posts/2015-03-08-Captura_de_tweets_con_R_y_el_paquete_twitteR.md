@@ -1,6 +1,6 @@
 ---
 layout: posts
-title: "Captura de tweets con R y el paquete 'twitteR' (ejemplo Mobile World Congress 2015)"
+title: "Captura de tweets con R y el paquete twitteR (ejemplo Mobile World Congress 2015)"
 date: 2015-03-08
 ---
 

@@ -1,4 +1,6 @@
-name: Guillem Salazar
+name: RqueR Blog
+description: Análisis y visualización de opendata con R
+url: rquer.github.io
 markdown: redcarpet
 #markdown: markdown
 #markdown:
@@ -8,3 +10,5 @@ highlighter: pygments
 #paginate: 10
 paginate_path: /blog/page/:num
 encoding: utf-8
+gems:
+  - jekyll-feed

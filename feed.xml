@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<generator uri="http://jekyllrb.com" version="2.4.0">Jekyll</generator>
+<link href="/feed.xml" rel="self" type="application/atom+xml" />
+<link href="/" rel="alternate" type="text/html" />
+<updated>2016-01-26T10:37:49+01:00</updated>
+<id>/</id>
+<title>Guillem Salazar</title>
+<entry>
+<title>Ejemplo de mapa interactivo: histórico de seísmos en la Península Ibérica</title>
+<link href="/2016/01/25/Ejemplo_de_mapa_interactivo.html" rel="alternate" type="text/html" title="Ejemplo de mapa interactivo: histórico de seísmos en la Península Ibérica" />
+<published>2016-01-25T00:00:00+01:00</published>
+<updated>2016-01-25T00:00:00+01:00</updated>
+<id>/2016/01/25/Ejemplo_de_mapa_interactivo</id>
+<content type="html" xml:base="/2016/01/25/Ejemplo_de_mapa_interactivo.html">&lt;p&gt;Lo prometido es deuda!&lt;/p&gt;
+
+&lt;p&gt;Después de largos meses con un solo post en el blog y sin actividad, &lt;strong&gt;RqueR Blog&lt;/strong&gt; vuelve con una renovada estructura (nos hemos mudado a &lt;a href=&quot;https://github.com/rquer&quot;&gt;GitHub&lt;/a&gt;) y con los mapas interactivos prometidos como segundo post.&lt;/p&gt;
+
+&lt;p&gt;Si en el primer post aprendimos como hacer mapas estáticos con el paquete &lt;em&gt;ggmap&lt;/em&gt; hoy es hora de aprender a construir mapas dinámicos. Aprovecharemos la herramienta &lt;a href=&quot;http://leafletjs.com/&quot;&gt;&lt;em&gt;Leaflet&lt;/em&gt;&lt;/a&gt; y el paquete homónimo de R.&lt;/p&gt;
+
+&lt;p&gt;Usaremos, a modo de ejemplo, el histórico de datos de seísmos en la Península Ibérica del &lt;a href=&quot;http://www.ign.es/ign/main/index.do&quot;&gt;Instituto Geográfico Nacional&lt;/a&gt;. Concretamente usaremos el catálogo de terremotos que podéis encontrar en su versión original &lt;a href=&quot;http://www.ign.es/ign/layoutIn/sismoFormularioCatalogo.do&quot;&gt;aquí&lt;/a&gt;. O bien, en el GitHub del blog con un formato mas amable (texto separado por tabuladores, &lt;a href=&quot;https://raw.githubusercontent.com/rquer/rquer.github.io/master/files/terremotos.txt&quot;&gt;aquí&lt;/a&gt;) que será el que usemos en adelante. Estos últimos consisten en un archivo con las siguientes variables para cada terremoto producido desde 1370:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Evento&lt;/strong&gt; (código numérico para cada seísmo)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Fecha&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Hora&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Longitud&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Latitud&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Mag&lt;/strong&gt; (magnitud del seísmo)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Cargado de datos&lt;/h3&gt;
+
+&lt;p&gt;El primer paso será cargar los datos y visualizarlos:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;datos&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;read.table&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;https://raw.githubusercontent.com/rquer/rquer.github.io/master/files/terremotos.txt&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;sep&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;\t&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;header&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Para disminuïr la cantidad de datos a visualizar, filtraremos (y guardamos como un objeto separado, &lt;em&gt;datos.red&lt;/em&gt;) solo aquellos terremotos con una magnitud mayor a 5.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;datos.red&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;datos&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;which&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;datos&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Mag&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Uso del paquete &lt;em&gt;leaflet&lt;/em&gt;&lt;/h3&gt;
+
+&lt;p&gt;En caso de no tener instalado el paquete &lt;em&gt;leaflet&lt;/em&gt; podemos instalarlo con:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;install.packages&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;leaflet&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Y lo cargamos:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kn&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;leaflet&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;El mapa mas simple que podemos crear es un mapa con un punto por seísmo con las opciones que vienen por defecto. Para ello debemos introducir la Longitud y Latitud.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;m&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;leaflet&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt;
+  addTiles&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt;
+  addCircleMarkers&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;lng&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Longitud&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; lat&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Latitud&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;container&quot;&gt;
+    &lt;iframe src=&quot;/figures/Leaflet_map1.html&quot; height=&quot;615&quot; width=&quot;1000&quot; allowfullscreen=&quot;&quot; frameborder=&quot;0&quot;&gt;
+    &lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;h3&gt;Opciones adicionales&lt;/h3&gt;
+
+&lt;p&gt;Una infinidad de opciones pueden ser especificadas para modificar el mapa o la visualización de los datos. A modo de ejemplo, podemos:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Establecer el radio de los círculos proporcional a la magnitud del seísmo.&lt;/li&gt;
+&lt;li&gt;Cambiar el color de los puntos.&lt;/li&gt;
+&lt;li&gt;Añadir cuadros de información a los puntos que se muestran al pulsarlos con el ratón.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;El argumento &lt;em&gt;radius&lt;/em&gt; determina el tamaño de los círculos. El argumento &lt;em&gt;stroke&lt;/em&gt; puede fijarse como &lt;em&gt;FALSE&lt;/em&gt; para eliminar el contorno de los puntos. Y el argumento &lt;em&gt;color&lt;/em&gt; y &lt;em&gt;fillOpacity&lt;/em&gt; determinan el color y opacidad de estos mismos. Así, si queremos los seísmos representados como puntos rojos semitransparentes y de radio proporcional a su magnitud:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;m&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;leaflet&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt;
+  addTiles&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt;
+  addCircleMarkers&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;lng&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Longitud&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; lat&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Latitud&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;radius&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Mag&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;stroke&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;color&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;red&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;fillOpacity&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;container&quot;&gt;
+    &lt;iframe src=&quot;/figures/Leaflet_map2.html&quot; height=&quot;615&quot; width=&quot;1000&quot; allowfullscreen=&quot;&quot; frameborder=&quot;0&quot;&gt;
+    &lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Anteriormente hemos filtrado los datos para considerar los seísmos de magnitud mayor a 5. A continuación incluiremos todos los seísmos con magnitudes mayor a 3 y añadiremos un cuadro de información a cada punto que se muestran al pulsarlo con el ratón. Para ello debemos crear un vector de texto concatenando la información a incluir (en nuestro caso la &lt;em&gt;fecha&lt;/em&gt;, &lt;em&gt;hora&lt;/em&gt; y &lt;em&gt;magnitud&lt;/em&gt; del seísmo). Este vector lo añadimos a los datos como una nueva variable, llamada &lt;em&gt;info&lt;/em&gt;.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;datos.red&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;datos&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;which&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;datos&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Mag&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),]&lt;/span&gt;
+datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;info&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;paste&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Fecha: &amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Fecha&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;, Hora: &amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Hora&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;, Magnitud: &amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Mag&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;sep&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Para añadir los cuadros de información usamos el argumento &lt;em&gt;popup&lt;/em&gt; donde introduciremos la nueva variable creada. También podemos cambiar el mapa base usando &lt;em&gt;addTiles&lt;/em&gt;. Podemos usar diferentes mapas especificando una &lt;em&gt;url&lt;/em&gt; válida. Algunas pueden pre-visualizarse &lt;a href=&quot;http://leaflet-extras.github.io/leaflet-providers/preview/&quot;&gt;aquí&lt;/a&gt;. Solo hay que copiar la web indicada en la primera linea del pequeño script de la cabezera del mapa deseado. Nosotros usaremos un mapa topográfico llamado &lt;strong&gt;OpenTopoMap&lt;/strong&gt;. &lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;m&lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;leaflet&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt;
+  addTiles&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;urlTemplate&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;%&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# Add default OpenStreetMap map tiles&lt;/span&gt;
+  addCircleMarkers&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;lng&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Longitud&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; lat&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Latitud&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;radius&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;Mag&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;popup&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;datos.red&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;info&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;stroke&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;F&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;color&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;red&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;fillOpacity&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;container&quot;&gt;
+    &lt;iframe src=&quot;/figures/Leaflet_map3.html&quot; height=&quot;615&quot; width=&quot;1000&quot; allowfullscreen=&quot;&quot; frameborder=&quot;0&quot;&gt;
+    &lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Si hacemos click en un punto podremos ver la información del seísmo en forma de cuadro de texto.
+Esta imagen evidencia que el mar de Alborán, &lt;a href=&quot;http://politica.elpais.com/politica/2016/01/25/actualidad/1453697500_397724.html&quot;&gt;donde se ha producido un terremoto&lt;/a&gt; es una zona de fuertes seísmos dentro de la Península y se visualiza claramente la zona de colisión de la placa Africana con la placa Euroasiática.&lt;/p&gt;
+
+&lt;h3&gt;Mas recursos:&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;http://leafletjs.com/examples.html&quot;&gt;Tutorial&lt;/a&gt; y &lt;a href=&quot;http://leafletjs.com/reference.html&quot;&gt;documentación&lt;/a&gt; oficial de &lt;strong&gt;Leaflet&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://leaflet-extras.github.io/leaflet-providers/preview/&quot;&gt;Pre-visualizador de mapas disponibles&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+<author>
+<name>Guillem Salazar</name>
+</author>
+<summary>Lo prometido es deuda!</summary>
+</entry>
+<entry>
+<title>Captura de tweets con R y el paquete twitteR (ejemplo Mobile World Congress 2015)</title>
+<link href="/2015/03/08/Captura_de_tweets_con_R_y_el_paquete_twitteR.html" rel="alternate" type="text/html" title="Captura de tweets con R y el paquete twitteR (ejemplo Mobile World Congress 2015)" />
+<published>2015-03-08T00:00:00+01:00</published>
+<updated>2015-03-08T00:00:00+01:00</updated>
+<id>/2015/03/08/Captura_de_tweets_con_R_y_el_paquete_twitteR</id>
+<content type="html" xml:base="/2015/03/08/Captura_de_tweets_con_R_y_el_paquete_twitteR.html">&lt;p&gt;Para estrenar el blog voy a empezar mostrando la utilidad del paquete de R &lt;em&gt;twitteR&lt;/em&gt;, que permite interaccionar con la API de la conocida red social. Existen diferentes funciones en este paquete pero voy a explotar, a modo de inicio, las posibilidades de la función &lt;em&gt;searchTwitter()&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Consiste en una función que interactua con la API de Twitter y devuelve los tweets publicados en un pasado reciente (alrededor de los últimos 7 días). Vamos a utilizar esta función para capturar los tweets publicados en la ciudad de Barcelona durante el Mobile World Congress 2015 que se desarrolló recientemente en esta ciudad. Para ello vamos a capturar los tweets publicados en un rango de 10 km desde el centro de Barcelona que contengan el hashtag &lt;strong&gt;#MWC15&lt;/strong&gt;. A modo de ejemplo, haremos un par de visualizaciones de la evolución del número de tweets a lo largo de la semana y de la localización de estos tweets en la ciudad.&lt;/p&gt;
+
+&lt;p&gt;Para la instalación del paquete &lt;em&gt;twitteR&lt;/em&gt; y cargarlo en memoria:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;install_github(&amp;quot;twitteR&amp;quot;, username=&amp;quot;geoffjentry&amp;quot;)
+library(twitteR)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;La API de Twitter es abierta pero necesita de autentificación. Para que el paquete &lt;em&gt;twitteR&lt;/em&gt; pueda interactuar con la API de Twitter necesitamos autentificarnos. Para ello debemos ir a https://apps.twitter.com/app/new y rellenar los pasos necesarios para conseguir las llamadas &amp;quot;consumer key&amp;quot;, &amp;quot;consumer secret&amp;quot;, &amp;quot;access token&amp;quot; y &amp;quot;access secret&amp;quot;. Nos servirán en el siguiente paso:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;setup_twitter_oauth(&amp;quot;consumer key&amp;quot;, &amp;quot;consumer secret&amp;quot;, &amp;quot;access token&amp;quot;, &amp;quot;access secret&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Si todo ha funcionado bien deberíamos leer el mensaje &lt;strong&gt;Using direct authentication&lt;/strong&gt; en la consola de R. Una vez autentificados podemos empezar a usar  la función &lt;em&gt;searchTwitter()&lt;/em&gt;. Para el siguiente ejemplo capturaremos todos los tweets de la última semana que contengan el texto MWC15 y que se hallen a 10 km del centro de Barcelona. Estos son los parámetros que tomará la función. Con la segunda linea convertimos los datos en un &amp;#39;data frame&amp;#39;:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;string&amp;lt;-&amp;quot;MWC15&amp;quot;
+res&amp;lt;-searchTwitter(string,n=20000,geocode=&amp;#39;41.390880,2.174077,10km&amp;#39;)
+resDF&amp;lt;-twListToDF(res)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Ahora debemos convertir la latitud y longitud en variables numéricas:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;resDF$longitude&amp;lt;-as.numeric(resDF$longitude)
+resDF$latitude&amp;lt;-as.numeric(resDF$latitude)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Estamos listos para visualizar el posicionamiento de, en este caso, 5,970 tweets capturados entre el 01/03/2015 y el 06/03/2015. Usaremos el paquete &lt;em&gt;ggplot2&lt;/em&gt; y &lt;em&gt;ggmap&lt;/em&gt; para los gráficos:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;library(ggmap)
+map&amp;lt;-ggmap(get_map(&amp;quot;Barcelona&amp;quot;,zoom=13),extent=&amp;quot;device&amp;quot;)
+map + geom_point(data = resDF, aes(x=longitude ,y=latitude),cex=1.2,alpha=0.4,color=&amp;quot;red&amp;quot;) +
+guides(alpha=FALSE)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/files/Map.png&quot; alt=&quot;Map&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;Podemos añadir la densidad de tweets para tener una idea de donde se concentra la mayor proporción de los tweets:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;map +
+stat_density2d(data = resDF, aes(x = longitude, y = latitude,  fill = ..level.., alpha = ..level..), bins = 30, geom = &amp;#39;polygon&amp;#39;,n=100) +
+scale_fill_gradient(low = rgb(0,0,1), high = rgb(0,0,1)) +
+geom_point(data = resDF, aes(x=longitude ,y=latitude),col=rgb(1,0,0,0.4),cex=1) +
+theme(legend.position = &amp;quot;none&amp;quot;, axis.title = element_blank(), text = element_text(size = 12))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/files/Map_density.png&quot; alt=&quot;Map_density&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;Finalmente, podemos visualizar también la evolución del número de tweets a lo largo de la semana. El título del gráfico toma la información del texto buscado y definido anteriormente y del número de tweets capturados:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-R&quot; data-lang=&quot;R&quot;&gt;dev.new&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+ggplot&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;resDF&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; aes&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;created&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+geom_area&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;aes&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;y&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;..&lt;/span&gt;count..&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; stat &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;bin&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;binwidth&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+ggtitle&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;paste&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Search:&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;paste&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;string&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;collapse&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot; &amp;amp; &amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;||&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;dim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;resDF&lt;span class=&quot;p&quot;&gt;)[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;geolocalized TW retrieved&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+theme&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;plot.title &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; element_text&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;lineheight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;.4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; face&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;bold&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;size&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/files/Dynamics.png&quot; alt=&quot;Dynamics&quot;&gt;&lt;/p&gt;
+</content>
+<summary>Para estrenar el blog voy a empezar mostrando la utilidad del paquete de R twitteR, que permite interaccionar con la API de la conocida red social. Existen diferentes funciones en este paquete pero voy a explotar, a modo de inicio, las posibilidades de la función searchTwitter().</summary>
+</entry>
+</feed>
