@@ -2,7 +2,7 @@ name: RqueR Blog
 description: Análisis y visualización de opendata con R
 url: rquer.github.io
 markdown: kramdown
-highlighter: pygments
+highlighter: rouge
 #permalink: /:title
 #paginate: 10
 paginate_path: /blog/page/:num
