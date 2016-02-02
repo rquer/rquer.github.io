@@ -51,10 +51,10 @@ rmd2md <- function( path_site = getwd(),
           outFile <- file.path(path_site, dir_md, paste0(substr(f, 1, (nchar(f)-(nchar(in_ext)))), out_ext))
           
           #render_markdown(strict=TRUE)
-          #render_markdown(strict=FALSE) #code didn't render properly on blog
+          render_markdown(strict=FALSE) #code didn't render properly on blog
           
           #andy change to render for jekyll
-          render_jekyll(highlight = "pygments")
+          #render_jekyll(highlight = "pygments")
           #render_jekyll(highlight = "prettify") #for javascript
           
           opts_knit$set(out.format='markdown') 

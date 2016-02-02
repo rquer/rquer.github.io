@@ -21,6 +21,7 @@ La API de Twitter es abierta pero necesita de autentificación. Para que el paqu
 ```
 setup_twitter_oauth("consumer key", "consumer secret", "access token", "access secret")
 ```
+
 Si todo ha funcionado bien deberíamos leer el mensaje **Using direct authentication** en la consola de R. Una vez autentificados podemos empezar a usar  la función *searchTwitter()*. Para el siguiente ejemplo capturaremos todos los tweets de la última semana que contengan el texto MWC15 y que se hallen a 10 km del centro de Barcelona. Estos son los parámetros que tomará la función. Con la segunda linea convertimos los datos en un 'data frame':
 
 ```

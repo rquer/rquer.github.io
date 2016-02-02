@@ -1,10 +1,7 @@
 name: RqueR Blog
 description: Análisis y visualización de opendata con R
 url: rquer.github.io
-markdown: redcarpet
-#markdown: markdown
-#markdown:
-#  input: GFM
+markdown: kramdown
 highlighter: pygments
 #permalink: /:title
 #paginate: 10

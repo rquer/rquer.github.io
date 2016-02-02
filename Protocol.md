@@ -13,7 +13,7 @@ Header:
 ---
 layout: posts
 title: "Available genomes through time"
-author: "Guillem Salazar"
+author: "RuqeR Blog"
 published: false
 status: process
 draft: false
