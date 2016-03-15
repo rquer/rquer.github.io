@@ -62,7 +62,7 @@ theme(legend.position = "none", axis.title = element_blank(), text = element_tex
 
 Finalmente, podemos visualizar también la evolución del número de tweets a lo largo de la semana. El título del gráfico toma la información del texto buscado y definido anteriormente y del número de tweets capturados:
 
-```R
+```
 dev.new(width=8,height=5)
 ggplot(resDF, aes(created)) +
 geom_area(aes(y=..count..), stat = "bin",binwidth=3000) +
