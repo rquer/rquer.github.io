@@ -22,7 +22,7 @@ Usaremos, a modo de ejemplo, el histórico de datos de seísmos en la Península
 
 
 
-### Cargado de datos
+### Cargado de datos  
 El primer paso será cargar los datos y visualizarlos:
 
 ```r
@@ -63,7 +63,7 @@ m
     </iframe>
 </div>
 
-### Opciones adicionales
+### Opciones adicionales  
 
 Una infinidad de opciones pueden ser especificadas para modificar el mapa o la visualización de los datos. A modo de ejemplo, podemos:
 
@@ -111,6 +111,6 @@ m
 Si hacemos click en un punto podremos ver la información del seísmo en forma de cuadro de texto.
 Esta imagen evidencia que el mar de Alborán, [donde se ha producido un terremoto](http://politica.elpais.com/politica/2016/01/25/actualidad/1453697500_397724.html) es una zona de fuertes seísmos dentro de la Península y se visualiza claramente la zona de colisión de la placa Africana con la placa Euroasiática.
 
-### Mas recursos:
+### Mas recursos:  
 1. [Tutorial](http://leafletjs.com/examples.html) y [documentación](http://leafletjs.com/reference.html) oficial de **Leaflet**
 2. [Pre-visualizador de mapas disponibles](http://leaflet-extras.github.io/leaflet-providers/preview/)
